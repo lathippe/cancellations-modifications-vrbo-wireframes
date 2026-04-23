@@ -1,0 +1,900 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Vrbo · Cancellations & Modifications · v1 / v2</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Caveat:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --paper: #f6f3ec;
+    --ink: #1a1a1a;
+    --muted: #6b6b68;
+    --line: #d8d4c8;
+    --accent: #f2b200;
+    --yellow: #fde9a8;
+    --yellow-border: #e6cc6a;
+    --green: #c8e6c4;
+    --green-border: #86b47e;
+    --green-text: #2f5e2c;
+    --pink: #f7c8c8;
+    --pink-border: #d88a8a;
+    --blue: #c8d8e6;
+    --blue-border: #7ea0c0;
+    --beige: #e8e1d0;
+    --dot: #d3cfc3;
+  }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; padding: 0; background: var(--paper); color: var(--ink); font-family: 'Inter', -apple-system, sans-serif; }
+  body {
+    background-image: radial-gradient(var(--dot) 1px, transparent 1px);
+    background-size: 16px 16px;
+    padding: 64px 48px 96px;
+  }
+  .wrap { max-width: 1600px; margin: 0 auto; }
+  h1.phase {
+    font-family: 'Caveat', cursive;
+    font-size: 48px;
+    font-weight: 600;
+    margin: 0 0 4px;
+    letter-spacing: -0.5px;
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    flex-wrap: wrap;
+  }
+  .phase-badge {
+    font-family: 'Inter', sans-serif;
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 1.4px;
+    text-transform: uppercase;
+    padding: 5px 10px;
+    border-radius: 4px;
+    border: 1px solid;
+    line-height: 1;
+    position: relative;
+    top: -4px;
+  }
+  .phase-badge.primary { background: #e7f0e1; border-color: #9bb989; color: #3f5a33; }
+  .phase-badge.future  { background: #f0ebe0; border-color: #bfb598; color: #6b6244; }
+  .phase-scope.future {
+    opacity: 0.88;
+    border-top: 2px dashed #c9c2ad;
+    padding-top: 48px;
+    margin-top: 48px;
+  }
+  .phase-sub {
+    font-size: 15px;
+    color: var(--muted);
+    max-width: 900px;
+    margin: 0 0 8px;
+    line-height: 1.5;
+  }
+  .flow-line {
+    font-family: 'Caveat', cursive;
+    font-size: 22px;
+    color: #4a4a47;
+    margin: 0 0 40px;
+  }
+  .flow-line span { display: inline-block; margin: 0 6px; }
+  .section-rule { border: 0; border-top: 1px solid var(--line); margin: 64px 0 48px; }
+  .sub-heading {
+    font-family: 'Caveat', cursive;
+    font-size: 30px;
+    margin: 40px 0 8px;
+  }
+  .sub-heading-intent {
+    color: var(--muted);
+    font-size: 14px;
+    margin: 0 0 24px;
+    max-width: 900px;
+    line-height: 1.5;
+  }
+  .row {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 48px 40px;
+    align-items: start;
+    margin-bottom: 64px;
+  }
+  .row.two { grid-template-columns: repeat(2, minmax(300px, 1fr)); }
+  .row.three { grid-template-columns: repeat(3, minmax(280px, 1fr)); }
+  @media (max-width: 1100px) {
+    .row.two, .row.three { grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); }
+  }
+  .screen { display: flex; flex-direction: column; }
+  .screen h3 {
+    font-family: 'Caveat', cursive;
+    font-size: 26px;
+    font-weight: 600;
+    letter-spacing: 0.5px;
+    text-transform: uppercase;
+    margin: 0 0 6px;
+  }
+  .screen .intent { font-size: 14px; color: var(--muted); font-style: italic; margin: 0 0 18px; line-height: 1.5; }
+  .screen .code { font-size: 12px; color: var(--muted); float: right; font-family: 'Caveat', cursive; font-size: 18px; }
+  .notes {
+    font-family: 'Caveat', cursive;
+    font-size: 19px;
+    color: #3a3a37;
+    margin: 16px 4px 0;
+    line-height: 1.35;
+  }
+  .notes b { font-weight: 600; }
+  /* phone frame */
+  .phone {
+    background: #fff;
+    border: 2px solid var(--ink);
+    border-radius: 36px;
+    padding: 14px 8px 8px;
+    width: 100%;
+    max-width: 340px;
+    margin: 0 auto;
+    position: relative;
+  }
+  .phone-status {
+    display: flex; justify-content: space-between; align-items: center;
+    font-size: 13px; font-weight: 600;
+    padding: 0 16px 12px;
+  }
+  .phone-status .notch {
+    width: 90px; height: 22px; background: var(--ink); border-radius: 14px;
+  }
+  .phone-status .signal {
+    font-size: 10px; letter-spacing: 2px;
+  }
+  .phone-body {
+    padding: 16px 18px 32px;
+    min-height: 480px;
+    font-size: 14px;
+    line-height: 1.45;
+    position: relative;
+  }
+  .brand { display: flex; align-items: center; gap: 8px; padding-bottom: 14px; border-bottom: 1px solid #eee; margin-bottom: 16px; }
+  .brand .dot { width: 12px; height: 12px; background: var(--accent); border-radius: 50%; }
+  .brand .name { font-weight: 600; font-size: 14px; flex: 1; }
+  .brand .close { color: var(--muted); font-size: 18px; }
+  .eyebrow { text-transform: uppercase; font-size: 10px; letter-spacing: 1.2px; color: var(--muted); margin-bottom: 4px; }
+  .title { font-size: 22px; font-weight: 700; line-height: 1.25; margin: 0 0 12px; letter-spacing: -0.3px; }
+  .body-text { font-size: 13.5px; color: #2a2a27; margin: 0 0 14px; line-height: 1.5; }
+  .card {
+    border: 1px solid #e1ddd0;
+    background: #f6f3ea;
+    border-radius: 12px;
+    padding: 14px;
+    margin: 0 0 14px;
+    font-size: 13px;
+  }
+  .card.yellow { background: var(--yellow); border-color: var(--yellow-border); }
+  .card.green { background: var(--green); border-color: var(--green-border); }
+  .card.pink { background: var(--pink); border-color: var(--pink-border); font-family: 'Caveat', cursive; font-size: 18px; line-height: 1.3; }
+  .card.muted { background: #efece4; border-color: #d8d4c8; color: var(--muted); }
+  .card.muted .v { color: var(--muted); }
+  .card h4 { margin: 0 0 6px; font-size: 13px; font-weight: 600; }
+  .kv { display: flex; justify-content: space-between; padding: 4px 0; font-size: 13px; }
+  .kv + .kv { border-top: 1px dashed #d8d4c8; }
+  .kv .k { color: var(--muted); }
+  .kv .v { font-weight: 500; }
+  .kv .v.new { color: var(--green-text); font-weight: 600; }
+  .btn {
+    display: block; text-align: center; padding: 12px;
+    border-radius: 10px; font-weight: 600; font-size: 14px;
+    margin-top: 10px; cursor: pointer;
+  }
+  .btn.primary { background: var(--ink); color: #fff; }
+  .btn.ghost { background: transparent; border: 1px dashed #c4bfb0; color: var(--ink); }
+  .btn.danger { background: var(--pink); color: #7a1f1f; border: 1px solid var(--pink-border); font-family: 'Caveat', cursive; font-size: 18px; }
+  .link { color: var(--ink); text-decoration: underline; font-size: 13px; display: inline-block; padding: 6px 0; }
+  .cancel-link {
+    text-align: center; margin-top: 18px;
+    font-size: 12.5px; color: var(--muted);
+  }
+  .cancel-link a { color: var(--ink); text-decoration: underline; font-weight: 500; }
+  .pill {
+    display: inline-block; padding: 2px 10px; border-radius: 999px;
+    font-size: 11px; font-weight: 600; margin-bottom: 10px;
+  }
+  .pill.yellow { background: var(--yellow); border: 1px solid var(--yellow-border); }
+  .pill.green { background: var(--green); border: 1px solid var(--green-border); color: var(--green-text); }
+  .pill.grey { background: #ececec; border: 1px solid #cfcfcf; color: #4a4a47; }
+  .countdown { display: flex; gap: 8px; margin: 10px 0; }
+  .countdown .box { border: 1px solid #cfc9ba; border-radius: 6px; padding: 6px 10px; font-size: 12px; font-weight: 600; background: #fff; }
+  .countdown .box b { font-size: 16px; display: inline-block; margin-right: 4px; }
+  .radio-row { display: flex; align-items: flex-start; gap: 10px; padding: 12px 12px; border: 1px solid #e1ddd0; border-radius: 10px; margin-bottom: 10px; background: #fff; }
+  .radio-row .r { width: 16px; height: 16px; border: 2px solid #b8b3a5; border-radius: 50%; margin-top: 2px; flex-shrink: 0; }
+  .radio-row.selected .r { border-color: var(--ink); background: radial-gradient(var(--ink) 35%, transparent 40%); }
+  .radio-row .label { font-weight: 600; font-size: 13.5px; }
+  .radio-row .sub { font-size: 12px; color: var(--muted); }
+  .radio-row .arr { margin-left: auto; color: var(--muted); }
+  .success-circle {
+    width: 64px; height: 64px; border-radius: 50%;
+    background: var(--green); display: flex; align-items: center; justify-content: center;
+    margin: 24px auto 16px;
+    font-size: 28px; color: var(--green-text); font-weight: 700;
+  }
+  .annotation {
+    font-family: 'Caveat', cursive;
+    background: var(--beige);
+    border-radius: 8px;
+    padding: 12px 14px;
+    font-size: 17px;
+    color: #3a3a37;
+    margin-top: 14px;
+    line-height: 1.3;
+  }
+  .annotation.rule { background: var(--blue); border: 1px solid var(--blue-border); }
+  .annotation.threshold { background: var(--yellow); border: 1px solid var(--yellow-border); }
+  .annotation b { text-transform: uppercase; letter-spacing: 1px; font-size: 12px; font-family: 'Inter'; font-weight: 700; display: block; margin-bottom: 4px; }
+  .strike { text-decoration: line-through; color: var(--muted); }
+  .ghost-txt { color: var(--muted); }
+  .kv.same .k, .kv.same .v { color: var(--green-text); opacity: 0.42; font-weight: 400; }
+  .kv.changed .k { font-weight: 600; color: var(--ink); }
+  .kv.changed .v { font-weight: 700; }
+  .footer-block {
+    margin-top: 24px;
+    padding: 24px 28px;
+    background: #eee8d8;
+    border-radius: 16px;
+    border: 1px solid var(--line);
+  }
+  .footer-block h2 { margin: 0 0 12px; font-size: 16px; text-transform: uppercase; letter-spacing: 1.5px; }
+  .footer-block ul { margin: 0; padding-left: 20px; font-size: 14px; line-height: 1.7; }
+  .footer-block.blocked { background: #f7e4d4; }
+  .footer-block.mehmet { background: #e4ecf7; }
+  .sticky {
+    background: #fff3a0;
+    border: 1px solid #e8d86b;
+    padding: 14px 16px 12px;
+    font-family: 'Caveat', cursive;
+    font-size: 18px;
+    line-height: 1.35;
+    color: #3a3320;
+    box-shadow: 2px 3px 8px rgba(0,0,0,0.08);
+    transform: rotate(-0.6deg);
+    margin: 18px 0 8px;
+    position: relative;
+    border-radius: 2px;
+  }
+  .sticky.probe { background: #ffd9ea; border-color: #e8a1c2; transform: rotate(0.6deg); color: #4a2235; }
+  .sticky::before {
+    content: 'Ask James';
+    position: absolute;
+    top: -10px;
+    left: 12px;
+    background: #2a2a2a;
+    color: #fff;
+    font-family: 'Inter', sans-serif;
+    font-size: 9px;
+    font-weight: 700;
+    letter-spacing: 1.2px;
+    text-transform: uppercase;
+    padding: 3px 7px;
+    border-radius: 2px;
+  }
+  .sticky.probe::before { content: 'UXR probe'; background: #b2345a; }
+  .sticky .q { font-family: 'Inter', sans-serif; font-size: 10px; font-weight: 700; letter-spacing: 1.2px; text-transform: uppercase; background: #3a3320; color: #fff3a0; padding: 2px 6px; border-radius: 2px; margin-right: 6px; }
+  .sticky.probe .q { background: #4a2235; color: #ffd9ea; }
+  .ask-summary {
+    background: #fff3a0;
+    border: 1px solid #e8d86b;
+    padding: 20px 28px;
+    border-radius: 4px;
+    margin: 24px 0 40px;
+    box-shadow: 2px 4px 12px rgba(0,0,0,0.08);
+  }
+  .ask-summary h3 { margin: 0 0 10px; font-family: 'Caveat', cursive; font-size: 26px; color: #3a3320; }
+  .ask-summary ol { margin: 0; padding-left: 22px; font-size: 14px; line-height: 1.7; color: #3a3320; }
+  .ask-summary li b { font-family: 'Inter', sans-serif; font-weight: 700; letter-spacing: 0.4px; }
+  .two-col { display: grid; grid-template-columns: 1fr 1fr; gap: 32px; margin-top: 40px; }
+  .three-col { display: grid; grid-template-columns: 1fr 1fr; gap: 24px; margin-top: 40px; }
+  @media (max-width: 900px) { .two-col, .three-col { grid-template-columns: 1fr; } }
+
+  /* toast */
+  .toast {
+    position: absolute;
+    left: 12px; right: 12px; bottom: 24px;
+    background: var(--ink); color: #fff;
+    padding: 14px 16px; border-radius: 12px;
+    font-size: 13px;
+    box-shadow: 0 6px 20px rgba(0,0,0,0.22);
+  }
+  .toast-title { font-weight: 600; margin-bottom: 2px; }
+  .toast-sub { font-size: 12px; opacity: 0.8; }
+  .dim { opacity: 0.38; filter: blur(0.3px); pointer-events: none; }
+
+  /* OTP */
+  .otp-code {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 26px; font-weight: 700;
+    letter-spacing: 10px;
+    text-align: center; margin: 10px 0 6px;
+    color: var(--ink);
+  }
+
+  /* EMAIL envelope — visually distinct from phone/dashboard */
+  .email {
+    background: #fffdf7;
+    border: 1px solid #d8d4c8;
+    border-radius: 4px;
+    width: 100%;
+    max-width: 380px;
+    margin: 0 auto;
+    box-shadow:
+      0 1px 0 rgba(0,0,0,0.04),
+      0 6px 16px rgba(0,0,0,0.06),
+      inset 0 0 0 6px transparent;
+    position: relative;
+    font-size: 14px;
+  }
+  .email-label {
+    position: absolute;
+    top: -32px; right: 0;
+    font-family: 'Caveat', cursive;
+    font-size: 18px;
+    color: var(--muted);
+  }
+  .email-header {
+    padding: 16px 20px 12px;
+    border-bottom: 1px solid #ece8db;
+    font-size: 12px;
+  }
+  .email-header .meta-row { display: flex; gap: 6px; padding: 2px 0; color: var(--muted); }
+  .email-header .meta-row .k { min-width: 54px; text-transform: uppercase; letter-spacing: 0.6px; font-size: 10px; font-weight: 600; padding-top: 1px; }
+  .email-header .meta-row .v { color: var(--ink); }
+  .email-header .subject { font-weight: 700; font-size: 15px; color: var(--ink); margin-top: 6px; line-height: 1.3; }
+  .email-body { padding: 18px 22px 24px; line-height: 1.55; color: #2a2a27; font-size: 13.5px; }
+  .email-body .brand-row { display: flex; align-items: center; gap: 8px; padding-bottom: 14px; border-bottom: 1px solid #ece8db; margin-bottom: 16px; }
+  .email-body .brand-row .dot { width: 12px; height: 12px; background: var(--accent); border-radius: 50%; }
+  .email-body .brand-row .name { font-weight: 600; font-size: 14px; }
+  .email-body .title { font-size: 20px; font-weight: 700; line-height: 1.25; margin: 0 0 12px; letter-spacing: -0.3px; }
+  .email-footer { padding: 14px 22px 18px; border-top: 1px solid #ece8db; font-size: 11px; color: var(--muted); text-align: center; }
+
+  .surface-name {
+    font-size: 12px;
+    color: #8a8a85;
+    font-weight: 500;
+    margin: 0 0 6px;
+    letter-spacing: 0.1px;
+  }
+  .surface-name::before {
+    content: '▸ ';
+    color: #b8b4a5;
+    font-size: 10px;
+  }
+
+
+  .top {
+    margin-bottom: 48px;
+  }
+  .top h1 {
+    font-family: 'Caveat', cursive;
+    font-size: 56px;
+    margin: 0 0 8px;
+  }
+  .top p { margin: 0; color: var(--muted); max-width: 900px; line-height: 1.5; }
+  .top .meta {
+    margin-top: 10px; font-size: 13px; color: var(--muted);
+    font-family: 'Caveat'; font-size: 18px;
+  }
+  .top .meta b { font-family: 'Inter'; font-size: 12px; text-transform: uppercase; letter-spacing: 1px; font-weight: 700; color: var(--ink); }
+</style>
+</head>
+<body>
+<div id="pw-gate" style="position:fixed;inset:0;background:#f6f3ec;z-index:9999;display:flex;align-items:center;justify-content:center;font-family:Inter,system-ui,sans-serif;">
+  <form id="pw-form" style="display:flex;flex-direction:column;gap:12px;width:320px;padding:28px;background:#fff;border:1px solid #d8d4c8;border-radius:12px;box-shadow:0 10px 40px rgba(0,0,0,0.08);">
+    <div style="font-weight:600;font-size:16px;">Protected</div>
+    <div style="font-size:13px;color:#6b6b68;">Enter the password to view this page.</div>
+    <input id="pw-input" type="password" autofocus autocomplete="off" style="padding:10px 12px;border:1px solid #d8d4c8;border-radius:8px;font-size:14px;font-family:inherit;">
+    <div id="pw-error" style="display:none;font-size:12px;color:#b3261e;">Incorrect password.</div>
+    <button type="submit" style="padding:10px 12px;background:#1a1a1a;color:#fff;border:0;border-radius:8px;font-size:14px;font-weight:500;cursor:pointer;font-family:inherit;">Unlock</button>
+  </form>
+</div>
+<script>
+(function(){
+  var HASH = '9c69bcf41e77f1952762165c200661b1e7b96317d297132bad723ad944dc8a45';
+  var gate = document.getElementById('pw-gate');
+  var form = document.getElementById('pw-form');
+  var input = document.getElementById('pw-input');
+  var err = document.getElementById('pw-error');
+  async function sha256(s){
+    var buf = new TextEncoder().encode(s);
+    var hash = await crypto.subtle.digest('SHA-256', buf);
+    return [...new Uint8Array(hash)].map(b=>b.toString(16).padStart(2,'0')).join('');
+  }
+  if (sessionStorage.getItem('pw-ok') === HASH) { gate.remove(); return; }
+  document.documentElement.style.overflow = 'hidden';
+  form.addEventListener('submit', async function(e){
+    e.preventDefault();
+    var h = await sha256(input.value);
+    if (h === HASH) {
+      sessionStorage.setItem('pw-ok', HASH);
+      gate.remove();
+      document.documentElement.style.overflow = '';
+    } else {
+      err.style.display = 'block';
+      input.value = '';
+      input.focus();
+    }
+  });
+})();
+</script>
+<div class="wrap">
+
+<div class="top">
+  <h1>Vrbo · Cancellations & Modifications</h1>
+  <p><b>v1</b> = system-triggered guarantee revision when Vrbo (EG) pushes a new itinerary. One consolidated email carries the diff + updated receipt; cancel routes through a tokenized link — no auth interstitial. <b>v2</b> = user-initiated edit from the dashboard (dates · location · upgrade · cancel) + optional +$10 trigger upgrade. Vrbo-scoped; other partners reuse the pattern later.</p>
+  <p class="meta"><b>Updated 2026-04-23 · post-James + post-council</b> &nbsp;— consolidated update email (diff in its own card + locked receipt copy); cancel = 1 step via tokenized link (no separate auth email); 2 UW outcomes (match · can't match); v2 scoped to 4 dashboard entry points + email deeplink.</p>
+</div>
+
+<!-- ========================================================= -->
+<!-- v1                                                         -->
+<!-- ========================================================= -->
+<h1 class="phase">v1 — system-triggered revision <span class="phase-badge primary">Primary build</span></h1>
+<p class="phase-sub">EG sends updated itinerary → WP auto-revises guarantee under locked premium, same order ID → customer gets <b>one consolidated email</b> (diff + updated receipt) → accept silently, or tap the in-email cancel link. The link is a tokenized URL → lands directly on final confirm (token = auth, no interstitial). If the cut-off window has passed, the same URL renders a "cancellation window closed" variant that routes to support. Dashboard updates passively.</p>
+<p class="flow-line">EG update <span>→</span> auto-revise <span>→</span> consolidated email <span>→</span> silent accept <span>|</span> cancel link <span>→</span> final confirm <b>or</b> cut-off variant <span>→</span> refund <b>or</b> support routing</p>
+
+<!-- Ask summary + v1.A side by side -->
+<div class="row two">
+
+<div class="ask-summary" style="margin: 0; order: 1;">
+  <h3>Ask James · next week (not UXR 2026-04-24)</h3>
+  <ol>
+    <li><b>Dashboard banner</b> — your sticker lists it as step 2 of the cancel flow. If dashboard is passive read-only, is banner still needed, or drop it entirely?</li>
+    <li><b>UW outcomes = 2?</b> — flowchart shows match / can't. Confirm "partial" is a data variant handled in the email, not a third screen.</li>
+    <li><b>3 preferences on can't match</b> (UXR probe) — upgrade / keep same / cancel+refund. Which is the default customer expectation? Pref 2 underlined on your sticker.</li>
+    <li><b>v2 can't-match fallback</b> — reuse v1.E, or new upgrade path for user-initiated edits?</li>
+    <li><b>Auth per modification</b> — Option B: auth only on destructive + money (cancel + upgrade + location). Edit dates silent. Confirm?</li>
+    <li><b>Upgrade +$10</b> — locked to v2 scope, correct? Not in v1 can't-match.</li>
+    <li><b>"Silence = accept"</b> (UXR probe) — does the customer read "guarantee updated, no action needed" as acceptance? Or do they expect a confirm step?</li>
+    <li><b>Upgrade payment for Vrbo purchases</b> — card's not on file (partner-routed). Charge on our site (new entry + compliance) or route through Vrbo partner API? Not discussed yet.</li>
+    <li><b>Default path — silent?</b> — v2.C same-price path: dashboard re-renders in place, email sent, no separate decision screen. Confirm silent default is OK, or do we need an inline toast for immediate feedback after submit?</li>
+    <li><b>Cut-off window definition</b> — trip start? −24h? −48h? Tied to payout UW window or its own policy? Needed to drive v1.B (cut-off) variant rendering.</li>
+    <li><b>Refund policy after cut-off</b> — CS discretionary (current Tilda flow) or fixed no-refund? Copy on v1.B (cut-off) "Email support" variant depends on this answer.</li>
+  </ol>
+</div>
+
+  <!-- v1.A Email -->
+  <div class="screen">
+    <h3>v1.A · Email "Guarantee updated" <span class="code">1.A</span></h3>
+    <p class="intent">Consolidated = notification + full replacement receipt in one email. Separate yellow diff-card (only place strike-through appears) followed by the locked purchase-confirmation hero copy with new numbers. Cancel link under the diff = tokenized URL → v1.B final confirm directly. Dashboard updates passively — no separate decision screen.</p>
+    <p class="surface-name">Email / Guarantee updated</p>
+    <div class="email">
+      <span class="email-label">inbox</span>
+      <div class="email-header">
+        <div class="meta-row"><span class="k">From</span><span class="v">WeatherPromise &lt;updates@weatherpromise.com&gt;</span></div>
+        <div class="meta-row"><span class="k">To</span><span class="v">you@gmail.com</span></div>
+        <div class="meta-row"><span class="k">Date</span><span class="v">Today, 9:41</span></div>
+        <div class="subject">Your Vrbo trip changed — we updated your guarantee</div>
+      </div>
+      <div class="email-body">
+        <div class="brand-row"><div class="dot"></div><div class="name">WeatherPromise</div></div>
+
+        <!-- Trip title + dates mirror the purchase confirmation -->
+        <p style="margin:0 0 4px; font-size:11px; color:var(--muted); text-transform:uppercase; letter-spacing:1px;">Booked through: Vrbo · #WP-12FJVVG3</p>
+        <div style="font-weight:700; font-size:18px; line-height:1.3; margin:8px 0 4px;">Trip to Lisbon · 2BR apartment</div>
+        <div style="color:var(--muted); font-size:13px; margin-bottom:16px;">Feb 7 — 12, 2027</div>
+
+        <!-- SEPARATE diff card — only place strike-through appears -->
+        <div class="card" style="background:#fff8df; border-color:#e8d86b;">
+          <div class="eyebrow" style="color:#6b5a1f;">⚠ What changed</div>
+          <div class="kv changed"><span class="k">Dates</span><span class="v"><span class="strike">Feb 6 — 9 (4 days)</span> <span class="new">Feb 7 — 12 (6 days)</span></span></div>
+          <div class="kv changed"><span class="k">Trigger</span><span class="v"><span class="strike">Rain 2+ days</span> <span class="new">Rain 3+ days</span></span></div>
+          <div class="kv same"><span class="k">Cover</span><span class="v">up to $1,500 — unchanged</span></div>
+          <div class="kv same"><span class="k">Premium</span><span class="v">$43 — unchanged</span></div>
+        </div>
+        <div style="text-align:center; margin-top:10px; padding-bottom:20px; border-bottom:1px solid #ece8db;">
+          <div style="font-size:12px; color:var(--muted); margin-bottom:2px;">Don't agree with the new terms?</div>
+          <a class="link" style="padding:0; font-size:13px; font-weight:600;">Cancel contract ↗</a>
+        </div>
+
+        <!-- Hero — LOCKED copy, updated numbers. Mirrors the purchase confirmation exactly. -->
+        <div class="card green" style="margin-top:20px;">
+          <div style="font-weight:700; font-size:17px; margin-bottom:8px;">✅ Your trip is still protected from rain</div>
+          <p style="margin:0 0 10px; font-size:14px;">If it rains on at least <b>3 days</b> of your <b>6-day trip</b>, you'll get <b>$1,500</b>.</p>
+          <p style="margin:0; font-size:13px; color:var(--muted);">A day counts if it rains for at least 2 hours between 8 AM and 8 PM.</p>
+          <div class="btn primary" style="margin-top:14px; font-size:13px;">Preview dashboard</div>
+        </div>
+
+        <p style="margin:18px 0 0; font-size:12px; color:var(--muted); text-align:center;">Your new guarantee is already active. No action needed.</p>
+      </div>
+      <div class="email-footer">WeatherPromise · Berlin, DE · <a class="link" style="padding:0; font-size:11px;">unsubscribe</a></div>
+    </div>
+    <p class="notes"><b>Notes ·</b> Consolidated email = notification + full replacement receipt in one. <b>Diff lives in its own yellow card</b> (only place strike-through appears). Below that, the hero reuses the <em>locked</em> purchase-confirmation copy (" If it rains on at least X days of your Y-day trip, you'll get $Z" + day-counts sentence) with the new numbers — so the user reads the email as a proper receipt, not a delta. Cancel link lives directly under the diff (moment of decision), carries a tokenized URL → v1.C final confirm. <b>Cancel TTL (James, 2026-04-23):</b> link stays live ~1 week; after that turns into "Contact support."</p>
+    <div class="sticky probe"><span class="q">Q7</span> Does "no action needed" read as acceptance? Or do people expect a confirm step?</div>
+    <div class="sticky"><span class="q">Q1</span> Dashboard banner (sticker step 2) — still needed if dashboard is passive read-only, or drop it entirely?</div>
+  </div>
+
+</div>
+
+<!-- v1.B cancel — tokenized link; 2 variants (happy + cut-off) -->
+<h3 class="sub-heading">v1.B · Cancel — final confirm <span style="font-weight:400; color:var(--muted); font-size:14px;">(2 variants depending on cut-off)</span></h3>
+<p class="sub-heading-intent">Cancel link in 1.A email carries a tokenized URL → same endpoint for both variants. Server checks cut-off window at click-time: if open → happy confirm; if closed → support-routing variant. No interstitial, no auth email — token = auth.</p>
+
+<div class="row two">
+
+  <!-- v1.B (happy) — Final confirm, cut-off open -->
+  <div class="screen">
+    <h3>v1.B · Final confirm <span class="pill green" style="font-size:10px; margin-left:4px;">cut-off open</span> <span class="code">1.B</span></h3>
+    <p class="intent">Default variant. Cut-off still open → user can self-serve. Clear irreversibility message, single destructive CTA. "Edit dates instead" secondary covers misclick / wrong intent.</p>
+    <p class="surface-name">Web / Cancel — final confirm (happy)</p>
+    <div class="phone">
+      <div class="phone-status"><span>9:41</span><div class="notch"></div><span class="signal">●●●● ▲</span></div>
+      <div class="phone-body">
+        <div class="brand"><div class="dot"></div><div class="name">WeatherPromise</div><span style="color:var(--muted)">←</span></div>
+        <div class="eyebrow">Cancel · final step</div>
+        <div class="title">One last check</div>
+        <div class="card">
+          <div class="kv"><span class="k">Trip</span><span class="v">Lisbon · Feb 7—12</span></div>
+          <div class="kv"><span class="k">Resolution</span><span class="v">Refund $43 via Vrbo</span></div>
+          <div class="kv"><span class="k">Expected</span><span class="v">5–7 business days</span></div>
+        </div>
+        <div class="card" style="border-style:dashed; font-size:13px;">
+          This cancels your guarantee for this trip. It can't be undone — if you need coverage later, it's a new purchase.
+        </div>
+        <div class="btn danger">Cancel my guarantee</div>
+        <div class="btn ghost">Go back</div>
+        <div style="text-align:center; margin-top:10px;">
+          <a class="link" style="padding:0; font-size:12px; color:var(--muted);">Didn't mean to cancel? Edit dates instead ↗</a>
+        </div>
+      </div>
+    </div>
+    <p class="notes"><b>Notes ·</b> No reason selector in v1 — single opt-out path. No pause/rebook window (parked). "Edit dates instead" link = misclick recovery; routes to Vrbo booking (v1) or v2.B (once v2 ships).</p>
+  </div>
+
+  <!-- v1.B (cut-off) — Cancellation window closed -->
+  <div class="screen">
+    <h3>v1.B · Cancellation window closed <span class="pill yellow" style="font-size:10px; margin-left:4px;">cut-off hit</span> <span class="code">1.B'</span></h3>
+    <p class="intent">Same URL, different render. Trip is too close to start — self-serve cancel is locked. Route to CS for manual review (matches today's Tilda flow). No destructive CTA on this variant.</p>
+    <p class="surface-name">Web / Cancel — cut-off closed</p>
+    <div class="phone">
+      <div class="phone-status"><span>9:41</span><div class="notch"></div><span class="signal">●●●● ▲</span></div>
+      <div class="phone-body">
+        <div class="brand"><div class="dot"></div><div class="name">WeatherPromise</div><span style="color:var(--muted)">←</span></div>
+        <div class="eyebrow">Cancel · request received</div>
+        <div class="title">Cancellation window closed</div>
+        <div class="body-text" style="font-size:14px;">Your trip starts in <b>2 days</b>, so self-service cancellation is locked. Our team can still review your request manually.</div>
+        <div class="card">
+          <div class="kv"><span class="k">Trip</span><span class="v">Lisbon · Feb 7—12</span></div>
+          <div class="kv"><span class="k">Status</span><span class="v">Active · not cancelled</span></div>
+          <div class="kv"><span class="k">Code</span><span class="v">#WP-12FJVVG3</span></div>
+        </div>
+        <div class="card" style="border-style:dashed; font-size:13px; background:#fff8df; border-color:#e8d86b;">
+          <b>What happens next:</b> tap below to email support with your trip details pre-filled. CS reviews case-by-case (refund possible depending on policy).
+        </div>
+        <div class="btn primary">Email support</div>
+        <div class="btn ghost">See dashboard</div>
+      </div>
+    </div>
+    <p class="notes"><b>Notes ·</b> Server decides variant at click-time, not at email send. URL always same. mailto: pre-fills subject "<em>Cancellation request · #WP-12FJVVG3</em>" + trip code in body so CS has it ready. Guarantee stays <b>Active</b> on dashboard until CS manually cancels. <b>Blocked on James:</b> cut-off window definition (trip start? −24h? −48h?) + refund policy after cut-off (CS discretionary or fixed no-refund?).</p>
+    <div class="sticky"><span class="q">Q10</span> Cut-off window — trip start? −24h? −48h? Tied to the payout UW window?</div>
+    <div class="sticky"><span class="q">Q11</span> Refund policy after cut-off — CS discretionary (current) or fixed (no refund)? The "Email support" copy depends on the answer.</div>
+  </div>
+
+</div>
+
+<!-- v1.C + v1.D — Cancellation confirmed (dashboard + email) -->
+<h3 class="sub-heading">v1.C · Cancelled dashboard &nbsp;+&nbsp; v1.D · Cancellation email</h3>
+<p class="sub-heading-intent">Cancel = refund, full stop. No pause state, no rebook window in v1. Receipt email mirrors the dashboard finality. Rebook path = "Get your WeatherPromise" (new purchase, not true undo). Pause + rebook + true-undo parked (see "NOT drawn" below).</p>
+
+<div class="row two">
+
+  <div class="screen">
+    <h3>v1.C · Dashboard — cancelled <span class="code">1.C</span></h3>
+    <p class="intent">Contract canceled state → refund block → rebook + trip-edit exits. "Get your WeatherPromise" promoted above fold (recovery path). "Change trip dates on Vrbo" = secondary, addresses the "I wanted to edit, not cancel" intent.</p>
+    <p class="surface-name">Dashboard / Cancelled</p>
+    <div class="phone">
+      <div class="phone-status"><span>9:41</span><div class="notch"></div><span class="signal">●●●● ▲</span></div>
+      <div class="phone-body">
+        <div class="brand"><div class="dot"></div><div class="name">WeatherPromise</div></div>
+
+        <div class="title">Contract canceled</div>
+        <div class="card">Your WeatherPromise contract has been canceled.</div>
+        <div class="card">
+          <div style="font-weight:700; margin-bottom:4px;">$43.00 refund issued</div>
+          Allow 5–7 business days for the refund to reach your original payment method via Vrbo.
+        </div>
+
+        <!-- Recovery paths promoted up (previously buried in footer) -->
+        <div class="card" style="background:#e8f5e9; border-color:#b5dcb8;">
+          <div style="font-weight:700; margin-bottom:4px; color:var(--green-text);">Changed your mind?</div>
+          <div style="font-size:13px; margin-bottom:8px;">Get a new WeatherPromise for this trip — rain-pricing is live, new terms.</div>
+          <div class="btn primary" style="margin-top:0;">Get your WeatherPromise</div>
+        </div>
+        <div style="margin-top:10px; text-align:center;">
+          <a class="link" style="padding:0; font-size:13px;">Change trip dates on Vrbo ↗</a>
+        </div>
+
+        <div class="body-text" style="color:var(--muted); font-size:13px; margin-top:14px;">
+          ⓘ Need help? <a class="link" style="padding:0; font-size:13px;">support@weatherpromise.com</a>
+        </div>
+      </div>
+    </div>
+    <p class="notes"><b>Notes ·</b> Cancel = refund, nothing more. <b>No true-undo</b> in v1 (Rad: refund already in Vrbo queue, state-machine cost > value). Recovery = new purchase via "Get your WeatherPromise" (existing pattern, WP voice memory: only allowed "Protect"/"Get" CTA exception). Secondary "Change trip dates on Vrbo" = misclick mitigation for post-commit regret.</p>
+  </div>
+
+  <div class="screen">
+    <h3>v1.D · Cancellation email <span class="code">1.D</span></h3>
+    <p class="intent">Short confirmation. Coverage-canceled card + refund amount + same two recovery paths as v1.C (rebook + edit on Vrbo). No card-ending reference — for Vrbo purchase we don't own card data; refund routes through EG to customer's original payment method.</p>
+    <p class="surface-name">Email / Cancellation confirmed</p>
+    <div class="email">
+      <span class="email-label">inbox</span>
+      <div class="email-header">
+        <div class="meta-row"><span class="k">From</span><span class="v">WeatherPromise &lt;updates@weatherpromise.com&gt;</span></div>
+        <div class="meta-row"><span class="k">To</span><span class="v">you@gmail.com</span></div>
+        <div class="meta-row"><span class="k">Date</span><span class="v">Today, 10:02</span></div>
+        <div class="subject">Cancellation confirmed: Lisbon trip</div>
+      </div>
+      <div class="email-body">
+        <div class="brand-row"><div class="dot"></div><div class="name">WeatherPromise</div></div>
+        <p style="margin:0 0 4px; font-size:11px; color:var(--muted); text-transform:uppercase; letter-spacing:1px;">Booked through: Vrbo · #WP-12FJVVG3</p>
+        <div style="font-weight:700; font-size:18px; line-height:1.3; margin:8px 0 4px;">Trip to Lisbon · 2BR apartment</div>
+        <div style="color:var(--muted); font-size:13px; margin-bottom:16px;">Feb 7 — 12, 2027</div>
+
+        <div class="card" style="background:#fff1e6; border-color:#e8c7a1;">
+          <div class="eyebrow" style="color:#a05c1d;">⚠ Coverage canceled</div>
+          <div style="font-size:14px; margin-top:4px;">With this cancellation, your upcoming trip is no longer protected against rain.</div>
+        </div>
+
+        <div style="font-weight:700; font-size:18px; margin:18px 0 6px;">Refund issued $43.00</div>
+        <p style="margin:0 0 14px; font-size:14px;">Please allow 5–7 business days for your refund to be credited back to your original payment method via Vrbo.</p>
+
+        <div class="card green">
+          <div style="font-weight:700; font-size:15px; margin-bottom:4px;">Want to stay covered?</div>
+          <p style="margin:0 0 10px; font-size:13px;">Get a new WeatherPromise for this trip — rain-pricing is live and new terms apply.</p>
+          <div class="btn primary" style="margin-top:0; font-size:13px;">Get your WeatherPromise</div>
+        </div>
+
+        <div style="text-align:center; margin-top:12px;">
+          <a class="link" style="padding:0; font-size:13px;">Change trip dates on Vrbo ↗</a>
+        </div>
+
+        <div class="body-text" style="color:var(--muted); font-size:13px; margin-top:18px;">Questions? <a class="link" style="padding:0; font-size:13px;">Reply or contact support</a>.</div>
+      </div>
+      <div class="email-footer">WeatherPromise · Berlin, DE · <a class="link" style="padding:0; font-size:11px;">unsubscribe</a></div>
+    </div>
+    <p class="notes"><b>Notes ·</b> Dates match v1.A (Feb 7 — 12, updated itinerary). Email structure mirrors current production "Cancellation confirmed" design — header / property / Coverage canceled card / refund / stay-covered block.</p>
+  </div>
+
+</div>
+
+<!-- v1.E UW fallback — single "can't match" screen -->
+<h3 class="sub-heading">v1.E · UW can't match — fallback</h3>
+<p class="sub-heading-intent">UW has 2 outcomes (per James's flowchart, 2026-04-23): <b>match</b> (new terms computed, fold into the v1.A consolidated email with diff + updated receipt) or <b>can't match</b> (no offer possible under locked premium → this screen). "Full match" and "Partial match" are data variants of v1.A, not separate screens.</p>
+
+<div class="row">
+
+  <!-- v1.E — Can't match (the only UW-specific screen) -->
+  <div class="screen" style="max-width:420px;">
+    <h3>v1.E · Can't match <span class="code">1.E</span></h3>
+    <p class="intent">New trip is too different — no offer possible under locked premium. Customer picks between keeping original terms (new dates uncovered) or cancelling with refund. <b>Blocked on James:</b> 3 preferences from sticker — upgrade / keep same / cancel+refund, Pref 2 underlined.</p>
+    <p class="surface-name">Dashboard / UW can't match</p>
+    <div class="phone">
+      <div class="phone-status"><span>9:41</span><div class="notch"></div><span class="signal">●●●● ▲</span></div>
+      <div class="phone-body">
+        <div class="brand"><div class="dot"></div><div class="name">WeatherPromise</div></div>
+        <span class="pill yellow">Needs your call</span>
+        <div class="title">We couldn't update your guarantee for the new trip</div>
+        <div class="body-text">Your trip changed too much for us to carry the same coverage without a price change.</div>
+        <div class="card">
+          <div class="eyebrow">Your options</div>
+          <div class="radio-row selected">
+            <div class="r"></div>
+            <div>
+              <div class="label">Keep original terms</div>
+              <div class="sub">New dates won't be covered · James's Pref 2 (underlined)</div>
+            </div>
+          </div>
+          <div class="radio-row">
+            <div class="r"></div>
+            <div>
+              <div class="label">Cancel and refund $43</div>
+              <div class="sub">Full refund via Vrbo · 5–7 business days · Pref 3</div>
+            </div>
+          </div>
+        </div>
+        <div class="btn primary">Continue</div>
+        <div style="font-size:12px; color:var(--muted); text-align:center; margin-top:8px;">Upgrade option (Pref 1) not in v1 — parked for v2</div>
+      </div>
+    </div>
+    <p class="notes"><b>Notes ·</b> James's stickers list 3 preferences (upgrade / keep same / cancel+refund), Pref 2 underlined = his pick. Upgrade path needs UW ceiling logic → deferred to v2. For v1, 2 radios (keep / cancel) with keep-same as default.</p>
+    <div class="sticky probe"><span class="q">Q3</span> 3 preferences on can't-match — which is the default customer expectation? Pref 2 underlined on your sticker — test that assumption.</div>
+    <div class="sticky"><span class="q">Q2</span> UW = 2 outcomes (match / can't)? Partial is a data variant handled in email v1.A — confirm no third screen.</div>
+  </div>
+
+</div>
+
+<!-- ========================================================= -->
+<!-- v2                                                         -->
+<!-- ========================================================= -->
+<hr class="section-rule">
+
+<div class="phase-scope future">
+<h1 class="phase">v2 — user-initiated edit <span class="phase-badge future">Scope for later</span></h1>
+<p class="phase-sub">Ships after v1. Adds 4 entry points on the dashboard (Edit dates · Edit location · Improve coverage · Cancel) and email deeplink into the same flows. Premium stays locked. Auth-per-change is open (see council notes below).</p>
+<p class="flow-line">Edit button <span>|</span> email deeplink <span>→</span> pick dates <span>→</span> new guarantee <span>→</span> [skip pay] <span>|</span> [+$10 upgrade] <span>→</span> success</p>
+
+<div class="sticky"><span class="q">Q4</span> v2 can't-match fallback — reuse v1.E, or is there a new upgrade path specific to user-initiated edits?</div>
+
+<div class="row three">
+
+  <!-- v2.A Entry -->
+  <div class="screen">
+    <h3>v2.A · Dashboard — 4 entry points <span class="code">2.A</span></h3>
+    <p class="intent">Same dashboard page as v1. Three primary actions plus a small cancel link. Email deeplink lands here or skips directly to the action the user picked.</p>
+    <p class="surface-name">Dashboard / Trip — entry</p>
+    <div class="phone">
+      <div class="phone-status"><span>9:41</span><div class="notch"></div><span class="signal">●●●● ▲</span></div>
+      <div class="phone-body">
+        <div class="brand"><div class="dot"></div><div class="name">WeatherPromise</div><span style="color:var(--muted)">⋯</span></div>
+        <div style="font-weight:700; font-size:20px; margin-bottom:4px;">Trip to Lisbon</div>
+        <div style="color:var(--muted); font-size:13px; margin-bottom:16px;">Feb 7 — 10, 2027</div>
+        <div class="card">
+          <div class="eyebrow">Guarantee</div>
+          <div class="body-text" style="margin:4px 0 0;">3-day guarantee up to <b>$1,500</b> if it rains on 2+ days.</div>
+        </div>
+        <div class="btn primary">Edit dates</div>
+        <div class="btn ghost">Edit location</div>
+        <div class="btn ghost">Improve coverage</div>
+        <div style="text-align:center; margin-top:18px;">
+          <a class="link" style="font-size:13px; color:var(--muted); text-decoration:underline;">Cancel guarantee</a>
+        </div>
+      </div>
+    </div>
+    <p class="notes"><b>Notes ·</b> 3 primary CTAs + cancel as quiet hyperlink (James, 2026-04-23). Each CTA deep-linkable from email. Cancel routes through v1.B final confirm (same tokenized-URL pattern as v1). <b>Open:</b> does every modification need email-auth like cancel? (council pending — Option B recommended)</p>
+    <div class="sticky"><span class="q">Q5</span> Auth per modification — Option B: auth only on destructive + money moves (cancel, location change, +$10 upgrade). Edit dates passes silent. Confirm?</div>
+  </div>
+
+  <!-- v2.B Form -->
+  <div class="screen">
+    <h3>v2.B · Edit form — dates only <span class="code">2.B</span></h3>
+    <p class="intent">Vrbo v2 scope: dates. Destination and hotel parked. Partner-match warning reminds Vrbo booking is source of truth.</p>
+    <p class="surface-name">Dashboard / Edit form</p>
+    <div class="phone">
+      <div class="phone-status"><span>9:41</span><div class="notch"></div><span class="signal">●●●● ▲</span></div>
+      <div class="phone-body">
+        <div class="brand"><div class="dot"></div><div class="name">WeatherPromise</div><span style="color:var(--muted)">×</span></div>
+        <div class="eyebrow">Edit · Lisbon</div>
+        <div class="title">New dates</div>
+        <div style="margin-bottom:10px;">
+          <div class="eyebrow">Start</div>
+          <div class="card" style="padding:10px 12px; background:#fff;">Feb 7, 2027</div>
+        </div>
+        <div style="margin-bottom:10px;">
+          <div class="eyebrow">End</div>
+          <div class="card" style="padding:10px 12px; background:#fff;">Feb 12, 2027 <span class="new" style="color:var(--green-text); font-weight:700;">+2 days</span></div>
+        </div>
+        <div style="color:var(--muted); font-size:12px; margin-bottom:14px;">Current: Feb 7 — 10 (3 days)</div>
+        <div class="card yellow" style="font-size:13px;">Heads up — your Vrbo booking also needs to match these dates.</div>
+        <div class="btn primary">See new guarantee</div>
+      </div>
+    </div>
+    <p class="notes"><b>Notes ·</b> Premium is locked. "No charge yet" promise is implicit — reinforced on 2.C.</p>
+  </div>
+
+  <!-- v2.C — Inline confirmation on the same dashboard (not a decision screen) -->
+  <div class="screen">
+    <h3>v2.C · Dashboard updated · optional upgrade <span class="code">2.C</span></h3>
+    <p class="intent">After user submits new dates on v2.B, the <b>same dashboard</b> re-renders in place with updated guarantee. Inline toast confirms + email receipt is on its way. Optional upgrade card appears only when UW has a viable +$10 offer. No separate decision screen.</p>
+    <p class="surface-name">Dashboard / Trip (post-edit)</p>
+    <div class="phone">
+      <div class="phone-status"><span>9:41</span><div class="notch"></div><span class="signal">●●●● ▲</span></div>
+      <div class="phone-body">
+        <div class="brand"><div class="dot"></div><div class="name">WeatherPromise</div><span style="color:var(--muted)">⋯</span></div>
+        <div style="font-weight:700; font-size:20px; margin-bottom:4px;">Trip to Lisbon</div>
+        <div style="color:var(--muted); font-size:13px; margin-bottom:10px;">Feb 7 — 12, 2027</div>
+        <span class="pill yellow">Updated · just now</span>
+        <div class="card green">
+          <div class="eyebrow" style="color:var(--green-text)">Guarantee · active</div>
+          <div class="kv changed"><span class="k">Dates</span><span class="v"><span class="strike">Feb 7 — 10 (4 days)</span> <span class="new">Feb 7 — 12 (6 days)</span></span></div>
+          <div class="kv changed"><span class="k">Trigger</span><span class="v"><span class="strike">Rain 2+ days</span> <span class="new">Rain 4+ days</span></span></div>
+          <div class="kv same"><span class="k">Cover</span><span class="v">up to $1,500</span></div>
+          <div class="kv same"><span class="k">Premium</span><span class="v">$43</span></div>
+        </div>
+        <div class="card yellow">
+          <div style="font-weight:600; margin-bottom:4px;">Want your original trigger?</div>
+          <div style="font-size:12.5px; margin-bottom:8px; color:var(--muted);">Keep <b>rain on 2+ days</b> across the full trip for <b>+$10</b>.</div>
+          <div class="btn primary" style="margin-top:0;">Upgrade +$10</div>
+        </div>
+        <div style="font-size:12px; color:var(--muted); text-align:center; margin-top:12px;">ⓘ Receipt on the way to j••••@gmail.com</div>
+        <div style="text-align:center; margin-top:14px;">
+          <a class="link" style="padding:0; font-size:13px; color:var(--muted); text-decoration:underline;">Undo — keep old guarantee</a>
+        </div>
+      </div>
+    </div>
+    <p class="notes"><b>Notes ·</b> Not a full decision screen — dashboard re-renders in place with new terms. Two surfaces at once: (1) inline state update, (2) email receipt in parallel. Yellow upgrade card = optional, only when UW has a ceiling left. "Undo" link = quiet escape for accidental edits. <b>Blocked on James:</b> confirm +$10 path is in v2 scope. Rakesh scenario 2 (conditions shift under premium threshold).</p>
+    <div class="sticky"><span class="q">Q6</span> +$10 upgrade — locked to v2 scope, right? Not a v1 can't-match option.</div>
+    <div class="sticky"><span class="q">Q8</span> Payment for +$10 on Vrbo-routed purchases — card not on file. Charge on our site (new entry + compliance) or route through Vrbo partner API? Not discussed yet.</div>
+    <div class="sticky"><span class="q">Q9</span> Default path (same-price trigger shift) = truly silent with only email confirm? Or do we need an inline toast on the dashboard for immediate feedback after submit?</div>
+  </div>
+
+</div>
+
+<div class="row">
+
+  <!-- v2.D Pay -->
+  <div class="screen" style="max-width:420px;">
+    <h3>v2.D · Pay — upgrade only <span class="code">2.D</span></h3>
+    <p class="intent">Screen exists only if user opted in to +$10. Default happy path skips it entirely.</p>
+    <p class="surface-name">Dashboard / Upgrade pay</p>
+    <div class="phone">
+      <div class="phone-status"><span>9:41</span><div class="notch"></div><span class="signal">●●●● ▲</span></div>
+      <div class="phone-body">
+        <div class="brand"><div class="dot"></div><div class="name">WeatherPromise</div><span style="color:var(--muted)">←</span></div>
+        <div class="eyebrow">Upgrade · +$10</div>
+        <div class="title">Charge</div>
+        <div class="card">
+          <div class="kv"><span class="k">Deeper coverage upgrade</span><span class="v">$10</span></div>
+        </div>
+        <div class="card" style="border-style:dashed;">
+          <div class="eyebrow">Payment</div>
+          <div style="font-size:13px; color:var(--muted); margin-top:4px;">[ card number ]  [ MM/YY ]  [ CVC ]</div>
+          <div style="font-size:12px; color:var(--muted); margin-top:6px;">Vrbo purchase — card not on file. Enter details to charge.</div>
+        </div>
+        <div class="body-text" style="color:var(--muted);">Old guarantee ends, new one activates — one step.</div>
+        <div class="btn primary">Pay & confirm upgrade</div>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+</div><!-- /phase-scope v2 -->
+
+<!-- ========================================================= -->
+<!-- Footers                                                    -->
+<!-- ========================================================= -->
+<hr class="section-rule">
+
+<div class="three-col">
+  <div class="footer-block">
+    <h2>Intentionally NOT drawn for Vrbo v1/v2</h2>
+    <ul>
+      <li><b>2-day paused state + rebook window</b> — cut from v1 (2026-04-23). Adds 3 surfaces, countdown logic, new state-machine for a use case that's rare in system-triggered revision. Candidate for v2+ once user-initiated cancel exists and we have data on recovery rate.</li>
+      <li><b>True-undo cancellation</b> — parked for v1. Rad: refund already in Vrbo partner queue, reversing = new state-machine + CS fallback on dual-state. v1 uses "Get your WeatherPromise" (rebuy) as recovery. Revisit if misclick/regret rate > 5–10% within 72h window.</li>
+      <li><b>Reason selector (6.B)</b> — extra friction on opt-out. If analytics needs it, add optional dropdown on final confirm.</li>
+      <li><b>Modify deflection "120% credit" (6.A)</b> — credit infra not ready; refund-only path.</li>
+      <li><b>120% credit on resolution (6.C)</b> — parked.</li>
+      <li><b>Reprice upgrade/downgrade decision (5.C)</b> — premium is locked for Vrbo. Replaced with "same price / optional +$10".</li>
+      <li><b>Minor-change branch (5.E)</b> — v1 handles this system-side; no dedicated user screen.</li>
+      <li><b>Separate "auth email" for cancel</b> — removed. Tokenized URL in v1.A email is the auth; lands directly on v1.B final confirm.</li>
+    </ul>
+  </div>
+  <div class="footer-block blocked">
+    <h2>Blocked on James</h2>
+    <ul>
+      <li><b>UW outcomes = 2 (match / can't)?</b> — confirm Partial is a data variant of 1.B, not a separate screen.</li>
+      <li><b>v1.E preferences</b> — sticker lists 3 (upgrade / keep same / cancel+refund, Pref 2 underlined). v1 currently shows 2 radios (keep / cancel). Upgrade deferred to v2 — confirm?</li>
+      <li><b>v2 can't-match fallback</b> — reuse v1.E screen, or new v2-specific upgrade path ("upgrade for +$X")?</li>
+      <li><b>v2.C upgrade +$10</b> — confirm upgrade path is in v2 scope.</li>
+      <li><b>Auth per modification (v2)</b> — email-click loop on every change, or only destructive/money? Council recommends Option B (auth on location + cancel; dates pass-through; upgrade via SCA).</li>
+      <li><b>Cut-off window</b> — when does self-serve cancel lock? Trip start? −24h? −48h? Drives v1.B (cut-off) variant.</li>
+      <li><b>Refund policy after cut-off</b> — CS discretionary (current Tilda) or fixed no-refund? Affects v1.B (cut-off) copy.</li>
+      <li><b>Default-if-no-action</b> — UXR (with Yana) validates "silence = accept" expectation.</li>
+    </ul>
+  </div>
+  <div class="footer-block" style="background:#f0e4f2;">
+    <h2>Pricing policy inputs (Rakesh)</h2>
+    <p style="font-size:13px; margin:0 0 8px; color:#3a3a37;">Orthogonal to UW match/no-match — describes <em>how</em> revised offer is computed, not how many screens we show. Clarify + validate with Rakesh before freeze.</p>
+    <ul>
+      <li><b>Sub-case 1:</b> Same conditions + premium scaling (small trip changes) — current Vrbo stance: premium locked, so this folds into UW match.</li>
+      <li><b>Sub-case 2:</b> Conditions adjusted under premium threshold (preserve price, tweak terms) — = James's Option 2 under "can't match" — partial revised terms.</li>
+      <li><b>Sub-case 3:</b> Completely new offer for large changes (significant modification) — likely = upgrade path (Pref 1), lives in v2.</li>
+    </ul>
+  </div>
+  <div class="footer-block mehmet">
+    <h2>Blocked on Mehmet (FE discovery)</h2>
+    <ul>
+      <li><b>Tokenized cancel URL</b> — TTL (James confirmed ~1 week; verify against infra), single-use vs idempotent, revocation on cancel-completed.</li>
+      <li><b>Cut-off server check</b> — same URL renders happy vs closed variant based on server response. FE conditional on <code>cutoff_reached</code>.</li>
+      <li><b>v2 email deep-link routing</b> — how 4 entry points (dates · location · upgrade · cancel) pre-populate dashboard state on landing.</li>
+      <li><b>Auth per modification (v2)</b> — auth on destructive + money actions (cancel, location, upgrade); dates pass silent. Implementation path TBD.</li>
+    </ul>
+  </div>
+</div>
+
+</div>
+</body>
+</html>
