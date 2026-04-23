@@ -433,11 +433,11 @@
 <!-- v1                                                         -->
 <!-- ========================================================= -->
 <h1 class="phase">v1 — system-triggered revision <span class="phase-badge primary">Primary build</span></h1>
-<p class="phase-sub">EG sends updated itinerary → WP auto-revises guarantee under locked premium, same order ID → customer gets <b>one consolidated email</b> (diff + updated receipt) → accept silently, or tap the in-email cancel link. The link is a tokenized URL → lands directly on final confirm (token = auth, no interstitial). If the cut-off window has passed, the same URL renders a "cancellation window closed" variant that routes to support. Dashboard updates passively.</p>
-<p class="flow-line">EG update <span>→</span> auto-revise <span>→</span> consolidated email <span>→</span> silent accept <span>|</span> cancel link <span>→</span> final confirm <b>or</b> cut-off variant <span>→</span> refund <b>or</b> support routing</p>
+<p class="phase-sub">EG sends updated itinerary → WP attempts to revise guarantee under locked premium. <b>UW forks into 2 outcomes:</b> <b>(a)</b> <b>match</b> → one <b>consolidated email</b> (diff + updated receipt) → accept silently, or tap the in-email cancel link (tokenized URL → confirm cancellation, no interstitial); if cut-off has passed, same URL renders a "cancellation window closed" variant → support routing. <b>(b)</b> <b>can't match</b> → <b>decision email</b> ("We couldn't update your guarantee") with CTA "Review your options" (tokenized URL → v1.E) → customer picks Keep original terms or Cancel + refund. Dashboard updates passively in both cases.</p>
+<p class="flow-line">EG update <span>→</span> UW <span>→</span> <b>match</b>: consolidated email → silent accept <b>or</b> cancel link → confirm cancellation <b>or</b> cut-off variant <span>|</span> <b>can't match</b>: decision email → v1.E → keep <b>or</b> cancel+refund</p>
 
 <!-- Ask summary + v1.A side by side -->
-<div class="row two">
+<div class="row two" style="align-items: center;">
 
 <div class="ask-summary" style="margin: 0; order: 1;">
   <h3>Ask James · next week (not UXR 2026-04-24)</h3>
@@ -459,7 +459,7 @@
   <!-- v1.A Email -->
   <div class="screen">
     <h3>v1.A · Email "Guarantee updated" <span class="code">1.A</span></h3>
-    <p class="intent">Consolidated = notification + full replacement receipt in one email. Separate yellow diff-card (only place strike-through appears) followed by the locked purchase-confirmation hero copy with new numbers. Cancel link under the diff = tokenized URL → v1.B final confirm directly. Dashboard updates passively — no separate decision screen.</p>
+    <p class="intent">Consolidated = notification + full replacement receipt in one email. Separate yellow diff-card (only place strike-through appears) followed by the locked purchase-confirmation hero copy with new numbers. Cancel link under the diff = tokenized URL → v1.B confirm cancellation directly. Dashboard updates passively — no separate decision screen.</p>
     <p class="surface-name">Email / Guarantee updated</p>
     <div class="email">
       <span class="email-label">inbox</span>
@@ -502,7 +502,7 @@
       </div>
       <div class="email-footer">WeatherPromise · Berlin, DE · <a class="link" style="padding:0; font-size:11px;">unsubscribe</a></div>
     </div>
-    <p class="notes"><b>Notes ·</b> Consolidated email = notification + full replacement receipt in one. <b>Diff lives in its own yellow card</b> (only place strike-through appears). Below that, the hero reuses the <em>locked</em> purchase-confirmation copy (" If it rains on at least X days of your Y-day trip, you'll get $Z" + day-counts sentence) with the new numbers — so the user reads the email as a proper receipt, not a delta. Cancel link lives directly under the diff (moment of decision), carries a tokenized URL → v1.C final confirm. <b>Cancel TTL (James, 2026-04-23):</b> link stays live ~1 week; after that turns into "Contact support."</p>
+    <p class="notes"><b>Notes ·</b> Consolidated email = notification + full replacement receipt in one. <b>Diff lives in its own yellow card</b> (only place strike-through appears). Below that, the hero reuses the <em>locked</em> purchase-confirmation copy (" If it rains on at least X days of your Y-day trip, you'll get $Z" + day-counts sentence) with the new numbers — so the user reads the email as a proper receipt, not a delta. Cancel link lives directly under the diff (moment of decision), carries a tokenized URL → v1.B confirm cancellation. <b>Cancel TTL (James, 2026-04-23):</b> link stays live ~1 week; after that turns into "Contact support."</p>
     <div class="sticky probe"><span class="q">Q7</span> Does "no action needed" read as acceptance? Or do people expect a confirm step?</div>
     <div class="sticky"><span class="q">Q1</span> Dashboard banner (sticker step 2) — still needed if dashboard is passive read-only, or drop it entirely?</div>
   </div>
@@ -510,16 +510,16 @@
 </div>
 
 <!-- v1.B cancel — tokenized link; 2 variants (happy + cut-off) -->
-<h3 class="sub-heading">v1.B · Cancel — final confirm <span style="font-weight:400; color:var(--muted); font-size:14px;">(2 variants depending on cut-off)</span></h3>
+<h3 class="sub-heading">v1.B · Confirm cancellation <span style="font-weight:400; color:var(--muted); font-size:14px;">(2 variants depending on cut-off)</span></h3>
 <p class="sub-heading-intent">Cancel link in 1.A email carries a tokenized URL → same endpoint for both variants. Server checks cut-off window at click-time: if open → happy confirm; if closed → support-routing variant. No interstitial, no auth email — token = auth.</p>
 
 <div class="row two">
 
-  <!-- v1.B (happy) — Final confirm, cut-off open -->
+  <!-- v1.B (happy) — Confirm cancellation, cut-off open -->
   <div class="screen">
-    <h3>v1.B · Final confirm <span class="pill green" style="font-size:10px; margin-left:4px;">cut-off open</span> <span class="code">1.B</span></h3>
-    <p class="intent">Default variant. Cut-off still open → user can self-serve. Clear irreversibility message, single destructive CTA. "Edit dates instead" secondary covers misclick / wrong intent.</p>
-    <p class="surface-name">Web / Cancel — final confirm (happy)</p>
+    <h3>v1.B · Confirm cancellation <span class="pill green" style="font-size:10px; margin-left:4px;">cut-off open</span> <span class="code">1.B</span></h3>
+    <p class="intent">Default variant. Cut-off still open → user can self-serve. Clear irreversibility message, single destructive CTA. No Vrbo-side link — WP can't edit bookings; if they want to keep it, they just don't tap Cancel.</p>
+    <p class="surface-name">Web / Confirm cancellation (happy)</p>
     <div class="phone">
       <div class="phone-status"><span>9:41</span><div class="notch"></div><span class="signal">●●●● ▲</span></div>
       <div class="phone-body">
@@ -536,12 +536,9 @@
         </div>
         <div class="btn danger">Cancel my guarantee</div>
         <div class="btn ghost">Go back</div>
-        <div style="text-align:center; margin-top:10px;">
-          <a class="link" style="padding:0; font-size:12px; color:var(--muted);">Didn't mean to cancel? Edit dates instead ↗</a>
-        </div>
       </div>
     </div>
-    <p class="notes"><b>Notes ·</b> No reason selector in v1 — single opt-out path. No pause/rebook window (parked). "Edit dates instead" link = misclick recovery; routes to Vrbo booking (v1) or v2.B (once v2 ships).</p>
+    <p class="notes"><b>Notes ·</b> No reason selector in v1 — single opt-out path. No pause/rebook window (parked). No Vrbo-edit link — WP can't modify a Vrbo booking; the only WP-side "undo" is not tapping Cancel.</p>
   </div>
 
   <!-- v1.B (cut-off) — Cancellation window closed -->
@@ -583,7 +580,7 @@
 
   <div class="screen">
     <h3>v1.C · Dashboard — cancelled <span class="code">1.C</span></h3>
-    <p class="intent">Contract canceled state → refund block → rebook + trip-edit exits. "Get your WeatherPromise" promoted above fold (recovery path). "Change trip dates on Vrbo" = secondary, addresses the "I wanted to edit, not cancel" intent.</p>
+    <p class="intent">Contract canceled state → refund block → rebook path. "Get your WeatherPromise" promoted above fold so the "I didn't mean to cancel" customer has a clear next step. No Vrbo-edit CTA — trip edits happen on Vrbo's side, not ours.</p>
     <p class="surface-name">Dashboard / Cancelled</p>
     <div class="phone">
       <div class="phone-status"><span>9:41</span><div class="notch"></div><span class="signal">●●●● ▲</span></div>
@@ -603,16 +600,12 @@
           <div style="font-size:13px; margin-bottom:8px;">Get a new WeatherPromise for this trip — rain-pricing is live, new terms.</div>
           <div class="btn primary" style="margin-top:0;">Get your WeatherPromise</div>
         </div>
-        <div style="margin-top:10px; text-align:center;">
-          <a class="link" style="padding:0; font-size:13px;">Change trip dates on Vrbo ↗</a>
-        </div>
-
         <div class="body-text" style="color:var(--muted); font-size:13px; margin-top:14px;">
           ⓘ Need help? <a class="link" style="padding:0; font-size:13px;">support@weatherpromise.com</a>
         </div>
       </div>
     </div>
-    <p class="notes"><b>Notes ·</b> Cancel = refund, nothing more. <b>No true-undo</b> in v1 (Rad: refund already in Vrbo queue, state-machine cost > value). Recovery = new purchase via "Get your WeatherPromise" (existing pattern, WP voice memory: only allowed "Protect"/"Get" CTA exception). Secondary "Change trip dates on Vrbo" = misclick mitigation for post-commit regret.</p>
+    <p class="notes"><b>Notes ·</b> Cancel = refund, nothing more. <b>No true-undo</b> in v1 (Rad: refund already in Vrbo queue, state-machine cost > value). Recovery = new purchase via "Get your WeatherPromise" (existing pattern, WP voice memory: only allowed "Protect"/"Get" CTA exception). No Vrbo-side link — WP can't reach into Vrbo to modify a booking.</p>
   </div>
 
   <div class="screen">
@@ -647,26 +640,62 @@
           <div class="btn primary" style="margin-top:0; font-size:13px;">Get your WeatherPromise</div>
         </div>
 
-        <div style="text-align:center; margin-top:12px;">
-          <a class="link" style="padding:0; font-size:13px;">Change trip dates on Vrbo ↗</a>
+        <div class="body-text" style="color:var(--muted); font-size:13px; margin-top:18px;">Questions? <a class="link" style="padding:0; font-size:13px;">Reply or contact support</a>.</div>
+      </div>
+      <div class="email-footer">WeatherPromise · Berlin, DE · <a class="link" style="padding:0; font-size:11px;">unsubscribe</a></div>
+    </div>
+    <p class="notes"><b>Notes ·</b> Dates match v1.A (Feb 7 — 12, updated itinerary). Email structure mirrors current production "Cancellation confirmed" design — header / property / Coverage canceled card / refund / stay-covered block. <b>No Vrbo-edit link</b> — WP can't modify bookings on Vrbo's side; the only WP-side recovery is a new purchase.</p>
+  </div>
+
+</div>
+
+<!-- v1.E UW fallback — decision email + can't-match screen -->
+<h3 class="sub-heading">v1.E · UW can't match — fallback (email + decision screen)</h3>
+<p class="sub-heading-intent">UW has 2 outcomes (per James's flowchart, 2026-04-23): <b>match</b> (new terms computed, fold into the v1.A consolidated email with diff + updated receipt) or <b>can't match</b> (no offer possible under locked premium → decision email → this screen). "Full match" and "Partial match" are data variants of v1.A, not separate screens.</p>
+
+<div class="row two">
+
+  <!-- v1.E.i — Decision email -->
+  <div class="screen">
+    <h3>v1.E.i · Email "Your call" <span class="code">1.E.i</span></h3>
+    <p class="intent">Sent when UW can't compute a new offer under locked premium. No diff card (nothing matched). Single primary CTA "Review your options" = tokenized URL → v1.E decision screen directly (token = auth, no interstitial). Same tokenized-URL pattern as cancel link in v1.A.</p>
+    <p class="surface-name">Email / Can't match — your call</p>
+    <div class="email">
+      <span class="email-label">inbox</span>
+      <div class="email-header">
+        <div class="meta-row"><span class="k">From</span><span class="v">WeatherPromise &lt;updates@weatherpromise.com&gt;</span></div>
+        <div class="meta-row"><span class="k">To</span><span class="v">you@gmail.com</span></div>
+        <div class="meta-row"><span class="k">Date</span><span class="v">Today, 9:41</span></div>
+        <div class="subject">Your Vrbo trip changed — we need your call on your guarantee</div>
+      </div>
+      <div class="email-body">
+        <div class="brand-row"><div class="dot"></div><div class="name">WeatherPromise</div></div>
+        <p style="margin:0 0 4px; font-size:11px; color:var(--muted); text-transform:uppercase; letter-spacing:1px;">Booked through: Vrbo · #WP-12FJVVG3</p>
+        <div style="font-weight:700; font-size:18px; line-height:1.3; margin:8px 0 4px;">Trip to Lisbon · 2BR apartment</div>
+        <div style="color:var(--muted); font-size:13px; margin-bottom:16px;">Feb 7 — 12, 2027 <span style="color:#a05c1d;">· updated by Vrbo</span></div>
+
+        <div class="card" style="background:#fff8df; border-color:#e8d86b;">
+          <div class="eyebrow" style="color:#6b5a1f;">⚠ We couldn't match your guarantee</div>
+          <div style="font-size:14px; margin-top:4px;">Your trip changed too much for us to keep the same coverage at the same price ($43). We need your call on what happens next.</div>
         </div>
+
+        <div style="font-weight:700; font-size:16px; margin:18px 0 6px;">Two options</div>
+        <ul style="margin:0 0 14px 18px; padding:0; font-size:14px; line-height:1.6;">
+          <li><b>Keep original terms</b> — your guarantee stays active for the old dates (Feb 6 — 9). New dates won't be covered.</li>
+          <li><b>Cancel and refund $43</b> — full refund via Vrbo, 5–7 business days.</li>
+        </ul>
+
+        <div class="btn primary" style="font-size:13px;">Review your options</div>
+        <div style="font-size:12px; color:var(--muted); text-align:center; margin-top:8px;">Link expires in 7 days.</div>
 
         <div class="body-text" style="color:var(--muted); font-size:13px; margin-top:18px;">Questions? <a class="link" style="padding:0; font-size:13px;">Reply or contact support</a>.</div>
       </div>
       <div class="email-footer">WeatherPromise · Berlin, DE · <a class="link" style="padding:0; font-size:11px;">unsubscribe</a></div>
     </div>
-    <p class="notes"><b>Notes ·</b> Dates match v1.A (Feb 7 — 12, updated itinerary). Email structure mirrors current production "Cancellation confirmed" design — header / property / Coverage canceled card / refund / stay-covered block.</p>
+    <p class="notes"><b>Notes ·</b> No strike-through diff here — there's nothing to match against. Decision email, not a receipt. Primary CTA = tokenized URL → v1.E. Upgrade option (James's Pref 1) parked for v2; not mentioned in email to avoid preempting that flow.</p>
   </div>
 
-</div>
-
-<!-- v1.E UW fallback — single "can't match" screen -->
-<h3 class="sub-heading">v1.E · UW can't match — fallback</h3>
-<p class="sub-heading-intent">UW has 2 outcomes (per James's flowchart, 2026-04-23): <b>match</b> (new terms computed, fold into the v1.A consolidated email with diff + updated receipt) or <b>can't match</b> (no offer possible under locked premium → this screen). "Full match" and "Partial match" are data variants of v1.A, not separate screens.</p>
-
-<div class="row">
-
-  <!-- v1.E — Can't match (the only UW-specific screen) -->
+  <!-- v1.E — Can't match decision screen -->
   <div class="screen" style="max-width:420px;">
     <h3>v1.E · Can't match <span class="code">1.E</span></h3>
     <p class="intent">New trip is too different — no offer possible under locked premium. Customer picks between keeping original terms (new dates uncovered) or cancelling with refund. <b>Blocked on James:</b> 3 preferences from sticker — upgrade / keep same / cancel+refund, Pref 2 underlined.</p>
@@ -743,7 +772,7 @@
         </div>
       </div>
     </div>
-    <p class="notes"><b>Notes ·</b> 3 primary CTAs + cancel as quiet hyperlink (James, 2026-04-23). Each CTA deep-linkable from email. Cancel routes through v1.B final confirm (same tokenized-URL pattern as v1). <b>Open:</b> does every modification need email-auth like cancel? (council pending — Option B recommended)</p>
+    <p class="notes"><b>Notes ·</b> 3 primary CTAs + cancel as quiet hyperlink (James, 2026-04-23). Each CTA deep-linkable from email. Cancel routes through v1.B confirm cancellation (same tokenized-URL pattern as v1). <b>Open:</b> does every modification need email-auth like cancel? (council pending — Option B recommended)</p>
     <div class="sticky"><span class="q">Q5</span> Auth per modification — Option B: auth only on destructive + money moves (cancel, location change, +$10 upgrade). Edit dates passes silent. Confirm?</div>
   </div>
 
@@ -854,12 +883,12 @@
     <ul>
       <li><b>2-day paused state + rebook window</b> — cut from v1 (2026-04-23). Adds 3 surfaces, countdown logic, new state-machine for a use case that's rare in system-triggered revision. Candidate for v2+ once user-initiated cancel exists and we have data on recovery rate.</li>
       <li><b>True-undo cancellation</b> — parked for v1. Rad: refund already in Vrbo partner queue, reversing = new state-machine + CS fallback on dual-state. v1 uses "Get your WeatherPromise" (rebuy) as recovery. Revisit if misclick/regret rate > 5–10% within 72h window.</li>
-      <li><b>Reason selector (6.B)</b> — extra friction on opt-out. If analytics needs it, add optional dropdown on final confirm.</li>
+      <li><b>Reason selector (6.B)</b> — extra friction on opt-out. If analytics needs it, add optional dropdown on confirm cancellation.</li>
       <li><b>Modify deflection "120% credit" (6.A)</b> — credit infra not ready; refund-only path.</li>
       <li><b>120% credit on resolution (6.C)</b> — parked.</li>
       <li><b>Reprice upgrade/downgrade decision (5.C)</b> — premium is locked for Vrbo. Replaced with "same price / optional +$10".</li>
       <li><b>Minor-change branch (5.E)</b> — v1 handles this system-side; no dedicated user screen.</li>
-      <li><b>Separate "auth email" for cancel</b> — removed. Tokenized URL in v1.A email is the auth; lands directly on v1.B final confirm.</li>
+      <li><b>Separate "auth email" for cancel</b> — removed. Tokenized URL in v1.A email is the auth; lands directly on v1.B confirm cancellation.</li>
     </ul>
   </div>
   <div class="footer-block blocked">
@@ -896,5 +925,236 @@
 </div>
 
 </div>
+
+<!-- Feedback widget — click-to-pin annotations + batch email -->
+<style>
+  .fb-pin {
+    position: absolute; width: 26px; height: 26px; border-radius: 999px;
+    background: #ff6b6b; color: #fff; display: flex; align-items: center; justify-content: center;
+    font-family: Inter, system-ui, sans-serif; font-size: 12px; font-weight: 600;
+    cursor: pointer; box-shadow: 0 2px 8px rgba(0,0,0,0.3);
+    transform: translate(-50%, -50%); z-index: 8500; user-select: none;
+    border: 2px solid #fff;
+  }
+  .fb-pin:hover { background: #e05555; }
+  .fb-popover {
+    position: absolute; z-index: 8600; width: 280px; padding: 12px;
+    background: #fff; border: 1px solid #d8d4c8; border-radius: 10px;
+    box-shadow: 0 8px 28px rgba(0,0,0,0.18);
+    font-family: Inter, system-ui, sans-serif;
+    transform: translate(-50%, 16px);
+  }
+  .fb-popover textarea {
+    width: 100%; box-sizing: border-box; padding: 8px 10px;
+    border: 1px solid #d8d4c8; border-radius: 6px;
+    font-family: inherit; font-size: 13px; resize: vertical;
+  }
+  .fb-popover .fb-actions { display: flex; gap: 6px; margin-top: 8px; justify-content: flex-end; }
+  .fb-popover button {
+    padding: 6px 12px; border: 0; border-radius: 6px;
+    font-family: inherit; font-size: 12px; cursor: pointer;
+  }
+  .fb-popover .fb-save { background: #1a1a1a; color: #fff; }
+  .fb-popover .fb-cancel { background: transparent; color: #6b6b68; }
+  .fb-popover .fb-delete { background: transparent; color: #b3261e; margin-right: auto; }
+  body.fb-annotating { cursor: crosshair; }
+  body.fb-annotating .fb-pin { cursor: pointer; }
+</style>
+<div id="fb-controls" style="position:fixed;bottom:24px;right:24px;z-index:9000;display:flex;flex-direction:column;gap:8px;align-items:flex-end;font-family:Inter,system-ui,sans-serif;">
+  <button id="fb-send" style="display:none;padding:10px 16px;background:#2e7a43;color:#fff;border:0;border-radius:999px;font-size:12px;font-weight:500;cursor:pointer;box-shadow:0 6px 20px rgba(0,0,0,0.15);">Send <span id="fb-count">0</span> → email</button>
+  <button id="fb-toggle" style="padding:12px 18px;background:#1a1a1a;color:#fff;border:0;border-radius:999px;font-size:13px;font-weight:500;cursor:pointer;box-shadow:0 6px 20px rgba(0,0,0,0.15);">💬 Leave feedback</button>
+</div>
+<div id="fb-hint" style="display:none;position:fixed;top:16px;left:50%;transform:translateX(-50%);z-index:9000;background:#1a1a1a;color:#fff;padding:8px 14px;border-radius:999px;font-family:Inter,system-ui,sans-serif;font-size:12px;">Click anywhere to drop a comment · ESC to stop</div>
+<div id="fb-modal" style="display:none;position:fixed;inset:0;background:rgba(26,26,26,0.35);z-index:9001;align-items:center;justify-content:center;font-family:Inter,system-ui,sans-serif;">
+  <form id="fb-form" style="display:flex;flex-direction:column;gap:12px;width:460px;max-width:90vw;max-height:85vh;padding:24px;background:#fff;border:1px solid #d8d4c8;border-radius:12px;box-shadow:0 20px 60px rgba(0,0,0,0.2);overflow:auto;">
+    <div style="display:flex;align-items:center;justify-content:space-between;">
+      <div style="font-weight:600;font-size:15px;">Send feedback</div>
+      <button type="button" id="fb-close" style="background:none;border:0;font-size:20px;color:#6b6b68;cursor:pointer;line-height:1;">×</button>
+    </div>
+    <div style="font-size:12px;color:#6b6b68;">Opens your email app with all pinned comments, pre-filled to Alfiia.</div>
+    <input id="fb-name" placeholder="Your name" autocomplete="off" style="padding:10px 12px;border:1px solid #d8d4c8;border-radius:8px;font-size:13px;font-family:inherit;">
+    <ol id="fb-preview" style="margin:0;padding:0 0 0 22px;font-size:12px;color:#1a1a1a;display:flex;flex-direction:column;gap:10px;"></ol>
+    <button type="submit" style="padding:10px 12px;background:#1a1a1a;color:#fff;border:0;border-radius:8px;font-size:13px;font-weight:500;cursor:pointer;font-family:inherit;">Send via email</button>
+  </form>
+</div>
+<script>
+(function(){
+  var comments = []; // {id, x, y, text, context, pinEl}
+  var annotating = false;
+  var nextNum = 1;
+  var toggleBtn = document.getElementById('fb-toggle');
+  var sendBtn = document.getElementById('fb-send');
+  var countEl = document.getElementById('fb-count');
+  var hint = document.getElementById('fb-hint');
+  var modal = document.getElementById('fb-modal');
+  var form = document.getElementById('fb-form');
+  var previewEl = document.getElementById('fb-preview');
+  var closeBtn = document.getElementById('fb-close');
+
+  function updateSend(){
+    countEl.textContent = comments.length;
+    sendBtn.style.display = comments.length > 0 ? 'block' : 'none';
+  }
+
+  function enter(){
+    annotating = true;
+    document.body.classList.add('fb-annotating');
+    toggleBtn.textContent = '✓ Done';
+    toggleBtn.style.background = '#2e7a43';
+    hint.style.display = 'block';
+  }
+  function exit(){
+    annotating = false;
+    document.body.classList.remove('fb-annotating');
+    toggleBtn.textContent = '💬 Leave feedback';
+    toggleBtn.style.background = '#1a1a1a';
+    hint.style.display = 'none';
+    var p = document.querySelector('.fb-popover');
+    if (p && p.dataset.draft === '1') { if (p._pin) p._pin.remove(); p.remove(); }
+    else if (p) p.remove();
+  }
+  toggleBtn.addEventListener('click', function(){ annotating ? exit() : enter(); });
+  document.addEventListener('keydown', function(e){ if (e.key === 'Escape' && annotating) exit(); });
+
+  function findContext(el){
+    var screen = el.closest('.screen');
+    if (screen){
+      var h = screen.querySelector('h3');
+      if (h) return h.textContent.trim().replace(/\s+/g,' ');
+    }
+    var phase = el.closest('[class*="phase-scope"]');
+    var node = el;
+    while (node && node !== document.body){
+      var prev = node.previousElementSibling;
+      while (prev){
+        if (/^H[1-3]$/.test(prev.tagName)) return prev.textContent.trim().replace(/\s+/g,' ');
+        prev = prev.previousElementSibling;
+      }
+      node = node.parentElement;
+    }
+    return 'Page';
+  }
+
+  document.addEventListener('click', function(e){
+    if (!annotating) return;
+    if (e.target.closest('#fb-controls, .fb-pin, .fb-popover, #fb-hint, #fb-modal, #pw-gate')) return;
+    e.preventDefault();
+    e.stopPropagation();
+    // close any draft popover
+    var existing = document.querySelector('.fb-popover');
+    if (existing){
+      if (existing.dataset.draft === '1' && existing._pin) existing._pin.remove();
+      existing.remove();
+    }
+    var x = e.pageX, y = e.pageY;
+    var ctx = findContext(e.target);
+    openPopover(x, y, null, ctx);
+  }, true);
+
+  function makePin(x, y, num){
+    var pin = document.createElement('div');
+    pin.className = 'fb-pin';
+    pin.style.left = x + 'px';
+    pin.style.top = y + 'px';
+    pin.textContent = num;
+    document.body.appendChild(pin);
+    return pin;
+  }
+
+  function openPopover(x, y, commentId, ctx){
+    var pop = document.createElement('div');
+    pop.className = 'fb-popover';
+    pop.style.left = x + 'px';
+    pop.style.top = y + 'px';
+    var existing = commentId ? comments.find(function(c){ return c.id === commentId; }) : null;
+    var num = existing ? existing.num : nextNum;
+    var initialText = existing ? existing.text : '';
+    var initialCtx = existing ? existing.context : ctx;
+    pop.innerHTML = '<div style="font-size:11px;color:#6b6b68;margin-bottom:6px;">#' + num + ' · ' + initialCtx.replace(/[<>]/g,'') + '</div>' +
+      '<textarea rows="3" placeholder="Your comment..."></textarea>' +
+      '<div class="fb-actions">' +
+        (existing ? '<button type="button" class="fb-delete">Delete</button>' : '') +
+        '<button type="button" class="fb-cancel">Cancel</button>' +
+        '<button type="button" class="fb-save">Save</button>' +
+      '</div>';
+    document.body.appendChild(pop);
+    var ta = pop.querySelector('textarea');
+    ta.value = initialText;
+    ta.focus();
+    var pin;
+    if (existing){
+      pin = existing.pinEl;
+    } else {
+      pop.dataset.draft = '1';
+      pin = makePin(x, y, num);
+      pop._pin = pin;
+    }
+    pop.querySelector('.fb-cancel').addEventListener('click', function(){
+      if (!existing && pin) pin.remove();
+      pop.remove();
+    });
+    pop.querySelector('.fb-save').addEventListener('click', function(){
+      var text = ta.value.trim();
+      if (!text){ if (!existing && pin) pin.remove(); pop.remove(); return; }
+      if (existing){
+        existing.text = text;
+      } else {
+        comments.push({ id: Date.now() + Math.random(), x: x, y: y, text: text, context: initialCtx, num: num, pinEl: pin });
+        nextNum++;
+      }
+      pop.remove();
+      updateSend();
+    });
+    var delBtn = pop.querySelector('.fb-delete');
+    if (delBtn){
+      delBtn.addEventListener('click', function(){
+        comments = comments.filter(function(c){ return c.id !== commentId; });
+        if (existing.pinEl) existing.pinEl.remove();
+        pop.remove();
+        updateSend();
+      });
+    }
+  }
+
+  // click a pin to edit (outside annotate mode too)
+  document.addEventListener('click', function(e){
+    var pin = e.target.closest('.fb-pin');
+    if (!pin) return;
+    e.preventDefault();
+    e.stopPropagation();
+    var c = comments.find(function(c){ return c.pinEl === pin; });
+    if (!c) return;
+    var existing = document.querySelector('.fb-popover');
+    if (existing) existing.remove();
+    openPopover(c.x, c.y, c.id);
+  }, true);
+
+  sendBtn.addEventListener('click', function(){
+    if (!comments.length) return;
+    previewEl.innerHTML = comments.map(function(c){
+      var safe = c.text.replace(/</g,'&lt;').replace(/>/g,'&gt;');
+      var ctx = c.context.replace(/</g,'&lt;').replace(/>/g,'&gt;');
+      return '<li><div style="color:#6b6b68;font-size:11px;margin-bottom:2px;">' + ctx + '</div>' + safe + '</li>';
+    }).join('');
+    modal.style.display = 'flex';
+    document.getElementById('fb-name').focus();
+  });
+  closeBtn.addEventListener('click', function(){ modal.style.display = 'none'; });
+  modal.addEventListener('click', function(e){ if (e.target === modal) modal.style.display = 'none'; });
+
+  form.addEventListener('submit', function(e){
+    e.preventDefault();
+    var name = document.getElementById('fb-name').value.trim() || 'Anonymous';
+    if (!comments.length) return;
+    var lines = comments.map(function(c){
+      return '#' + c.num + ' · ' + c.context + '\n' + c.text;
+    }).join('\n\n---\n\n');
+    var subject = 'Vrbo wireframes feedback — ' + name + ' (' + comments.length + ')';
+    var mailBody = lines + '\n\n— ' + name + '\nPage: ' + window.location.href;
+    window.location.href = 'mailto:alfia@weatherpromise.com?subject=' + encodeURIComponent(subject) + '&body=' + encodeURIComponent(mailBody);
+    setTimeout(function(){ modal.style.display = 'none'; }, 500);
+  });
+})();
+</script>
 </body>
 </html>
